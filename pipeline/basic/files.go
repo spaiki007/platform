@@ -17,11 +17,7 @@ type StaticFileComponent struct {
 
 func (sfc *StaticFileComponent) Init() {
 
-	//var cfg config.Configuration
-	//services.GetService(&cfg)
-	//sfc.urlPrefix = cfg.GetStringDefault("files:urlprefix", "/files/")
-	//path, ok := cfg.GetString("files:path")
-
+	sfc.urlPrefix = sfc.Config.GetStringDefault("files:urlprefix", "/files/")
 	path, ok := sfc.Config.GetString("files:path")
 	if ok {
 		sfc.stdLibHandler = http.StripPrefix(sfc.urlPrefix, http.FileServer(http.Dir(path)))

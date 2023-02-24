@@ -1,27 +1,30 @@
 package placeholder
 
 import (
-	"errors"
-	"io"
 	"platform/config"
 	"platform/pipeline"
-	"platform/services"
+	"platform/templates"
 )
 
-type SimpleMessageComponent struct{}
+type SimpleMessageComponent struct {
+	Message string
+	config.Configuration
+}
 
-func (c *SimpleMessageComponent) Init() {}
+func (lc *SimpleMessageComponent) ImplementsProcessRequestWithServices() {}
 
-func (c *SimpleMessageComponent) ProcessRequest(ctx *pipeline.ComponentContext, next func(*pipeline.ComponentContext)) {
+func (c *SimpleMessageComponent) Init() {
+	c.Message = c.Configuration.GetStringDefault("main:message", "Default Message")
+}
 
-	var cfg config.Configuration
-	services.GetService(&cfg)
+func (c *SimpleMessageComponent) ProcessRequestWithServices(ctx *pipeline.ComponentContext, next func(*pipeline.ComponentContext), executor templates.TemplateExecutor) {
 
-	msg, ok := cfg.GetString("main:message")
-	if ok {
-		io.WriteString(ctx.ResponseWriter, msg)
+	err := executor.ExecTemplate(ctx.ResponseWriter, "simple_message.html", c.Message)
+
+	if err != nil {
+		ctx.Error(err)
 	} else {
-		ctx.Error(errors.New("сannot find config setting"))
+		next(ctx)
 	}
-	next(ctx)
+
 }

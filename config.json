@@ -8,7 +8,12 @@
     },
 
     "files": {
-        "path": "placeholder/files"
+        "path": "placeholder/files/"
+    },
+
+    "templates": {
+        "path": "placeholder/*.html",
+        "reload": true
     }
 
 }
